@@ -24,7 +24,9 @@ private:
 
     struct TileAction
     {
-        // TODO
+        int row;
+        int col;
+        char previousTile;
     };
 
     enum class TileType
@@ -42,13 +44,9 @@ private:
     TileType selectedTile;
     QStack<TileAction> undoStack;
 
-    /*
-    QTableWidget *level;
-            OR
-    QGraphicsGridLayout *level;
-    */
-
-    QPushButton* createButton(const QIcon &icon, std::function<void()> action);
+    QPushButton* createButton(const QIcon &icon, TileType tileType, QVBoxLayout* layout);
+    QTableWidget* level = nullptr;
+    const float iconSize = 24.0f;
 };
 
 #endif // MAIN_WINDOW_H
