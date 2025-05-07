@@ -16,10 +16,10 @@ private:
     void selectTile(char tile);
     void onTileClicked(int row, int col);
     void undoTilePlacement();
-
+    void closeAllWindows();
     void clearLevel();
     void resizeLevel();
-
+    void showDocumentation();
     void exportToFile();
 
     struct TileAction

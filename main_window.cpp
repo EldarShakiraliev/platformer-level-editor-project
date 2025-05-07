@@ -40,26 +40,37 @@ MainWindow::MainWindow(QWidget *parent)
     level->setSelectionMode(QAbstractItemView::NoSelection);
     level->setSelectionBehavior(QAbstractItemView::SelectItems);
 
-    auto *editToolBar = new QToolBar();
-    editToolBar->setMovable(false);
-    auto *editToolWidget = new QWidget();
-    auto *editLayout = new QHBoxLayout(editToolWidget);
-
-    QPushButton *clearButton = new QPushButton("Clear");
-    QPushButton *resizeButton = new QPushButton("Resize");
-    QPushButton *undoButton = new QPushButton("Undo");
-
-    editLayout->addWidget(clearButton);
-    editLayout->addWidget(resizeButton);
-    editLayout->addWidget(undoButton);
-
-    editToolBar->addWidget(editToolWidget);
-    addToolBar(editToolBar);
-
-    connect(clearButton, &QPushButton::clicked, this, &MainWindow::clearLevel);
-    connect(resizeButton, &QPushButton::clicked, this, &MainWindow::resizeLevel);
-    connect(undoButton, &QPushButton::clicked, this, &MainWindow::undoTilePlacement);
     connect(level, &QTableWidget::cellClicked, this, &MainWindow::onTileClicked);
+
+    QMenuBar* menuBar = new QMenuBar(this);
+    setMenuBar(menuBar);
+
+//File
+    QMenu* file = menuBar->addMenu("&File");
+
+    QAction* exportLevelAction = file->addAction("Export Level...");
+    connect(exportLevelAction, &QAction::triggered, this, &MainWindow::exportToFile);
+
+    QAction* closeAction = file->addAction("Close All Windows");
+    connect(closeAction, &QAction::triggered, this, &MainWindow::closeAllWindows);
+
+//Edit
+    QMenu* edit = menuBar->addMenu("&Edit");
+
+    QAction* clear = edit->addAction("Clear Level");
+    connect(clear, &QAction::triggered, this, &MainWindow::clearLevel);
+
+    QAction* resize = edit->addAction("Resize Level");
+    connect(resize, &QAction::triggered, this, &MainWindow::resizeLevel);
+
+    QAction* undo = edit->addAction("Undo Tile Placement");
+    connect(undo, &QAction::triggered, this, &MainWindow::undoTilePlacement);
+
+//Help
+    QMenu* help = menuBar->addMenu("&Help");
+
+    QAction* document = help->addAction("Documentation");
+    connect(document, &QAction::triggered, this, &MainWindow::showDocumentation);
 
     mainLayout->addWidget(level);
     centralWidget->show();
@@ -212,23 +223,51 @@ void MainWindow::undoTilePlacement()
 void MainWindow::exportToFile()
 {
     QString filePath = QFileDialog::getSaveFileName(
-        this,
-        "Export Level",
-        "",
-        "RLL Files (*.rll);;All Files (*)"
+            this,
+            "Export Level",
+            "",
+            "RLL Files (*.rll);;All Files (*)"
     );
 
+    if (filePath.isEmpty()) return;
     QFile file(filePath);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return;
+
+    int rows = level->rowCount();
+    int cols = level->columnCount();
+    std::vector<char> data(rows * cols, '-');
+
+    for (int row = 0; row < rows; ++row) {
+        for (int col = 0; col < cols; ++col) {
+            QTableWidgetItem* item = level->item(row, col);
+            if (item) {
+                char tile = item->data(Qt::UserRole).toChar().toLatin1();
+                data[row * cols + col] = tile;
+            }
+        }
+    }
+
+    QString output;
+    encrypt(rows, cols, data.data(), output);
+
     QTextStream out(&file);
-
-    // TODO
-
-    /* Snippets:
-     * std::vector<char> data(rows * cols, '-');
-     * char tile = item->data(Qt::UserRole).toChar().toLatin1();
-     * encrypt(rows, cols, data.data(), output);
-     * out << output;
-     */
-
+    out << output;
     file.close();
+}
+
+void MainWindow::closeAllWindows()
+{
+    QApplication::closeAllWindows();
+}
+
+void MainWindow::showDocumentation()
+{
+    QMessageBox::information(this, "Documentation",
+                             "Use tile buttons on the left to place icons to change the level as you like.\n"
+                             "Use Edit menu to undo, to resize, or clear.\n"
+                             "Use undo to get rid of the last tile placement.\n"
+                             "Use resize to change the amount of rows and columns.\n"
+                             "Use clear to get rid of all the icons on the level.\n"
+                             "Export your project from File or use File to close all windows.");
 }
