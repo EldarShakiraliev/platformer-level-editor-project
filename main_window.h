@@ -3,49 +3,64 @@
 
 #include <QtWidgets>
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = nullptr);
+
     ~MainWindow();
+
+    void loadLevelToGrid(const std::vector<std::string> &levelData);
+
+    static std::vector<std::string> load_from_file(const QString &qpath);
+
+    static void drawSplash();
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;
 
 private:
     void selectTile(char tile);
+
     void onTileClicked(int row, int col);
+
     void undoTilePlacement();
+
     void closeAllWindows();
+
     void clearLevel();
+
     void resizeLevel();
+
     void showDocumentation();
+
     void exportToFile();
 
-    struct TileAction
-    {
+    struct TileAction {
         int row;
         int col;
         char previousTile;
     };
 
-    enum class TileType
-    {
-        Coin     = '*',
-        Enemy    = '&',
-        Exit     = 'E',
-        Player   = '@',
-        Spikes   = '^',
-        Wall     = '#',
+    enum class TileType {
+        Coin = '*',
+        Enemy = '&',
+        Exit = 'E',
+        Player = '@',
+        Spikes = '^',
+        Wall = '#',
         DarkWall = '=',
-        Air      = ' '
+        Cherry = '+',
+        Diamond = 'D',
+        Shoe = 'S',
+        Air = ' '
     };
 
     TileType selectedTile;
     QStack<TileAction> undoStack;
 
-    QPushButton* createButton(const QIcon &icon, TileType tileType, QVBoxLayout* layout);
-    QTableWidget* level = nullptr;
+    QPushButton *createButton(const QIcon &icon, TileType tileType, QVBoxLayout *layout);
+
+    QTableWidget *level = nullptr;
     const float iconSize = 24.0f;
 };
 

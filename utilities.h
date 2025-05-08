@@ -2,9 +2,9 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
-void encrypt(int rows, int columns, const char *data, QString &output)
-{
+void encrypt(int rows, int columns, const char *data, QString &output) {
     std::ostringstream result;
 
     for (int i = 0; i < rows; i++) {
@@ -15,8 +15,7 @@ void encrypt(int rows, int columns, const char *data, QString &output)
             char next_char = data[i * columns + j];
             if (next_char == current_char) {
                 char_strike++;
-            }
-            else {
+            } else {
                 if (char_strike > 1) {
                     result << char_strike;
                 }
