@@ -7,6 +7,7 @@ Use resize to change the amount of rows and columns.
 Use clear to get rid of all the icons on the level.
 Export your project from File or use File to close all windows.
 Edit your own rll files or create a new one.
+Use binds for most useful icons: 1(Wall), 2(Dark Wall), 3(Coin), 4(Spikes), 5(Enemy), 6(Air)
 
 Description of the Project #2:
 All basic features have been added to my Level Editor Program, as Grid editor, Tile selection panel, Basic editing tools, Menu bar, Export functionality and Documentation.

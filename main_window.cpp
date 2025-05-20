@@ -82,8 +82,29 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow() {}
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
-    // TODO
-
+    switch (event->key()) {
+        case Qt::Key_1:
+            selectTile('#');   // Wall
+            break;
+        case Qt::Key_2:
+            selectTile('=');   // Dark wall
+            break;
+        case Qt::Key_3:
+            selectTile('*');   // Coin
+            break;
+        case Qt::Key_4:
+            selectTile('^');   // Spikes
+            break;
+        case Qt::Key_5:
+            selectTile('&');   // Enemy
+            break;
+        case Qt::Key_6:
+            selectTile(' ');   // Air
+            break;
+        default:
+            QMainWindow::keyPressEvent(event);
+            return;
+    }
     QMainWindow::keyPressEvent(event);
 }
 
@@ -206,7 +227,7 @@ void MainWindow::onTileClicked(int row, int col) {
             data = 'S';
             break;
     }
-
+    this->setFocus();
     item->setData(Qt::UserRole, data);
 }
 
@@ -378,7 +399,6 @@ void MainWindow::drawSplash() {
     QEventLoop loop;
 
     QObject::connect(&timer, &QTimer::timeout, &loop, &QEventLoop::quit);
-    timer.setSingleShot(true);
     timer.start(3000);
     loop.exec();
 
@@ -387,7 +407,7 @@ void MainWindow::drawSplash() {
 
 void MainWindow::loadLevelToGrid(const std::vector<std::string> &levelData) {
     int rows = levelData.size();
-    int cols = levelData.empty() ? 0 : levelData[0].size();
+    int cols = levelData[0].size();
 
     level->setRowCount(rows);
     level->setColumnCount(cols);

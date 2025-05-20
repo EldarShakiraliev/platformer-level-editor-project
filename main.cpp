@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
                     }
                 }
                 catch (const std::exception &e) {
-                    QMessageBox::critical(&window, "Error", e.what());
+                    QMessageBox::warning(&window, "Error", e.what());
                 }
             }
         }
